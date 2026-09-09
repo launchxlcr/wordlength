@@ -32,6 +32,7 @@ const BOARD_SIDE_PADDING = 16; // matches .game's horizontal padding
 const MAX_TILE = 41;
 const MIN_TILE = 18;
 const GAP = 5;
+const BADGE_WIDTH = 36; // .length-hint (28px) + its margin-left (8px)
 const FLIP_DURATION = 300; // ms — must match CSS .tile.flip animation duration
 
 function useViewportWidth(): number {
@@ -66,7 +67,7 @@ export default function Row({
   const tileCount = isCurrent ? Math.max(letters.length, minPlaceholder) : letters.length;
   const viewportWidth = useViewportWidth();
   const maxBoardWidth = Math.min(MAX_BOARD_WIDTH, viewportWidth - BOARD_SIDE_PADDING);
-  const size = tileSize(tileCount || 1, maxBoardWidth);
+  const size = tileSize(tileCount || 1, maxBoardWidth - (lengthHint ? BADGE_WIDTH : 0));
 
   // flipping[i]: flip animation is playing (tile is mid-rotation, color hidden)
   const [flipping, setFlipping] = useState<boolean[]>(() => new Array(tileStates.length).fill(false));
