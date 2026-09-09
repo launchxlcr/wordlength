@@ -28,14 +28,27 @@ function LengthBadge({ hint }: { hint: LengthHint }) {
 }
 
 const MAX_BOARD_WIDTH = 480;
+const BOARD_SIDE_PADDING = 16; // matches .game's horizontal padding
 const MAX_TILE = 41;
-const MIN_TILE = 34;
+const MIN_TILE = 18;
 const GAP = 5;
 const FLIP_DURATION = 300; // ms — must match CSS .tile.flip animation duration
 
-function tileSize(numLetters: number): number {
+function useViewportWidth(): number {
+  const [width, setWidth] = useState(() =>
+    typeof window === 'undefined' ? MAX_BOARD_WIDTH : window.innerWidth
+  );
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, []);
+  return width;
+}
+
+function tileSize(numLetters: number, maxBoardWidth: number): number {
   if (numLetters === 0) return MAX_TILE;
-  const available = MAX_BOARD_WIDTH - GAP * (numLetters - 1);
+  const available = maxBoardWidth - GAP * (numLetters - 1);
   return Math.min(MAX_TILE, Math.max(MIN_TILE, Math.floor(available / numLetters)));
 }
 
@@ -51,7 +64,9 @@ export default function Row({
   const letters = word.toUpperCase().split('');
   // For the active row, render at least minPlaceholder tiles so there's always a visible target
   const tileCount = isCurrent ? Math.max(letters.length, minPlaceholder) : letters.length;
-  const size = tileSize(tileCount || 1);
+  const viewportWidth = useViewportWidth();
+  const maxBoardWidth = Math.min(MAX_BOARD_WIDTH, viewportWidth - BOARD_SIDE_PADDING);
+  const size = tileSize(tileCount || 1, maxBoardWidth);
 
   // flipping[i]: flip animation is playing (tile is mid-rotation, color hidden)
   const [flipping, setFlipping] = useState<boolean[]>(() => new Array(tileStates.length).fill(false));
@@ -107,7 +122,9 @@ export default function Row({
 
 // Empty row (future guess slot)
 export function EmptyRow({ numTiles = 5 }: { numTiles?: number }) {
-  const size = tileSize(numTiles);
+  const viewportWidth = useViewportWidth();
+  const maxBoardWidth = Math.min(MAX_BOARD_WIDTH, viewportWidth - BOARD_SIDE_PADDING);
+  const size = tileSize(numTiles, maxBoardWidth);
   return (
     <div className="row" style={{ gap: GAP }}>
       {Array.from({ length: numTiles }).map((_, i) => (

@@ -219,7 +219,7 @@ body {
 
 .key {
   height: 56px;
-  min-width: 42px;
+  min-width: 0;
   padding: 0 4px;
   border: none;
   border-radius: 4px;
@@ -448,4 +448,11 @@ body {
   .key  { height: 46px; }
   .game { padding: 6px 4px 4px; gap: 4px; }
   .board { gap: 4px; }
+}
+
+@media (max-width: 400px) {
+  .keyboard { padding: 0 2px; }
+  .keyboard-row { gap: 4px; }
+  .key { font-size: 12px; padding: 0 2px; }
+  .key--wide { font-size: 10px; }
 }
